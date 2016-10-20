@@ -29,11 +29,12 @@ subroutine electron_matrix_element
 ! Force matrix
 
 ! Start: cell serach
+  la_full = lattice_a*NK
   iflag_cell=0
   do aion=1,Nion
     do icell=1,NK
       do ix=1,Nx
-        x = Lx(ix) + lattice_a*icell
+        x = Lx(ix) + lattice_a*(icell-1)
         tmp= int_pot(x-Rion(aion)) &
               +int_pot(x-Rion(aion)+la_full) &
               +int_pot(x-Rion(aion)-la_full)
@@ -60,8 +61,8 @@ subroutine electron_matrix_element
         do icell=1,NK
           if(iflag_cell(icell,aion)==0)cycle
           do ix=1,Nx
-            x = Lx(ix) + lattice_a*icell
-            zs = zs - Zion(aion)*exp(zI*(kx(ik2)-kx(ik1))*x) &
+            x = Lx(ix) + lattice_a*(icell-1)
+            zs = zs + Zion(aion)*exp(zI*(kx(ik2)-kx(ik1))*x) &
               *conjg(zpsi_GS(ix,ib1,ik1))*zpsi_GS(ix,ib2,ik2) &
               *( &
               int_pot_drv1(x-Rion(aion)) &
@@ -70,7 +71,7 @@ subroutine electron_matrix_element
               )
           end do
         end do
-        zF_mat(is1,is2,aion)=-zs*H/dble(NK)
+        zF_mat(is1,is2,aion)=zs*H/dble(NK)
         zF_mat(is2,is1,aion)=conjg(zF_mat(is1,is2,aion))
         
       end do; end do

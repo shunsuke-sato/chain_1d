@@ -27,7 +27,7 @@ module global_variables
 ! Ions
   integer,parameter :: Nion = 2
   real(8) :: Zion(Nion), Rion(Nion), Mion(Nion)
-  real(8),allocatable :: Phi_FC(:,:,:,:)
+  real(8),allocatable :: Phi_FC(:,:,:,:),Fion(:,:)
 
 ! Energy
   real(8) :: E_ii
@@ -42,7 +42,7 @@ contains
 
   function int_pot(x)
     real(8) :: int_pot,x
-    real(8),parameter :: sg = 0.5d0, v0 = 0.4d0
+    real(8),parameter :: sg = 1.0d0, v0 = 0.3d0
     
     int_pot = v0/(sqrt(2d0*pi)*sg)*exp(-0.5d0*(x/sg)**2)
    
@@ -51,9 +51,9 @@ contains
 
   function int_pot_drv1(x)
     real(8) :: int_pot_drv1,x
-    real(8),parameter :: sg = 0.5d0, v0 = 0.4d0
+    real(8),parameter :: sg = 1.0d0, v0 = 0.3d0
     
-    int_pot_drv1 = v0/(sqrt(2d0*pi)*sg)*(-0.5d0*x/sg**2)*exp(-0.5d0*(x/sg)**2)
+    int_pot_drv1 = v0/(sqrt(2d0*pi)*sg)*(-x/sg**2)*exp(-0.5d0*(x/sg)**2)
    
     return
   end function int_pot_drv1

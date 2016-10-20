@@ -47,11 +47,6 @@ subroutine preparation
   end do
 
 
-! ion parameters
-  Zion(1) = 1.5d0; Mion(1) = 2000d0*3d0
-  Zion(2) = 0.5d0; Mion(2) = 1000d0*1d0
-  Rion(1) = 0.0d0
-  Rion(2) = 0.5d0*lattice_a
   
   Veff = 0d0
   do icopy = -5,5
@@ -65,7 +60,7 @@ subroutine preparation
   write(*,*)sum(abs(Veff))
   
   E_ii = 0d0
-  do icopy = -5,5
+  do icopy = -10,10
     do aion = 1,Nion
       if(icopy /= 0)E_ii = E_ii &
         + Zion(aion)*Zion(aion)*int_pot(Rion(aion)-Rion(aion)+lattice_a*icopy)
@@ -75,7 +70,7 @@ subroutine preparation
       end do
     end do
   end do
-  E_ii = E_ii ! To be checked
+  E_ii = 2d0*E_ii ! To be checked
 
   return
 end subroutine preparation

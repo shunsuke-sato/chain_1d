@@ -73,6 +73,7 @@ subroutine ground_state
   write(*,"(A,2x,e26.16e3)")'Total energy =',2d0*sum(spe(1,:))/dble(NK)+E_ii
   write(*,"(A,2x,e26.16e3)")'Electronic energy =',2d0*sum(spe(1,:))/dble(NK)
   write(*,"(A,2x,e26.16e3)")'Ion-Ionc energy =',E_ii
+  write(*,"(A,2x,e26.16e3)")'Band-gap (eV)=',2d0*Ry*(spe(2,1) - spe(1,1))
 
   write(*,"(A)")"!End Electronic ground state calculation"  
 !  zpsi(:,1:NBocc,:)=zpsi_GS(:,1:NBocc,:)
