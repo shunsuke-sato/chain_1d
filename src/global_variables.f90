@@ -28,6 +28,7 @@ module global_variables
   integer,parameter :: Nion = 2
   real(8) :: Zion(Nion), Rion(Nion), Mion(Nion)
   real(8),allocatable :: Phi_FC(:,:,:,:),Fion(:,:)
+  real(8),allocatable :: w2_ph(:,:),w_ph(:,:)
 
 ! Energy
   real(8) :: E_ii

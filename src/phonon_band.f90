@@ -7,16 +7,17 @@
 subroutine phonon_band
   use global_variables
   implicit none
-  real(8),parameter :: Udist = 0.10d0
+  real(8),parameter :: Udist = 1d-2
   complex(8),allocatable :: zWp_mat(:,:), zF_mat_t(:,:), zCt(:)
+  complex(8),allocatable :: zDw(:,:,:)
   real(8) :: x
   integer :: ik1,ik2,ib1,ib2,is1,is2
-  integer :: aion,bion,cion,icell,icell2,ix
+  integer :: aion,bion,cion,icell,icell2,icell3,ix
   complex(8) :: zs
   real(8) :: la_full
   integer :: Nmat
   integer :: iflag_cell(NK,Nion)
-  real(8) :: tmp,ss
+  real(8) :: tmp,ss,a,b2,c
   real(8) :: Eii_tmp
 !LAPACK ==
   integer :: lwork
@@ -32,7 +33,8 @@ subroutine phonon_band
   Nmat = NK*NB
   allocate(Phi_FC(NK,Nion,NK,Nion), Fion(NK,Nion))
   allocate(zWp_mat(NK*NB,NK*NB),zCt(NK*NB), zF_mat_t(NK*NB,NK*NB))
-  la_full = lattice_a*NK
+  allocate(zDw(Nion,Nion,NK))
+  la_full = lattice_a*dble(NK)
 
 ! Start: cell serach
   iflag_cell=0
@@ -116,14 +118,21 @@ subroutine phonon_band
           zs = zs + sum(conjg(zH_mat(:,is1))*zCt(:))/ss
         end do
         Fion(icell,bion)=-2d0*real(zs)
+!        Fion(icell,bion)= 0d0 ! debug
 ! ion-ion interaction ==
         do icell2 = 1,NK
           do cion=1,Nion
             if(icell2 == icell .and. bion == cion)cycle
-            x = Rion(bion) + (icell-1)*lattice_a - (Rion(cion) + (icell2-1)*lattice_a)
+            x = Rion(bion) + dble(icell-1)*lattice_a &
+              - (Rion(cion) + dble(icell2-1)*lattice_a)
             if(icell2 == 1 .and. cion == aion) x = x - Udist
             Fion(icell,bion)=Fion(icell,bion) - 2d0*Zion(bion)*Zion(cion)*( &
-              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) )
+              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) &
+              + int_pot_drv1(x + 2d0*la_full) + int_pot_drv1(x - 2d0*la_full) )
+
+!            write(*,"(3I6,e26.16e3)")aion,bion,cion,- 2d0*Zion(bion)*Zion(cion)*( &
+!              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) &
+!              + int_pot_drv1(x + 2d0*la_full) + int_pot_drv1(x - 2d0*la_full) )
 
           end do
         end do
@@ -132,7 +141,8 @@ subroutine phonon_band
     end do
     ss = sum(Fion)
     Fion(1,aion) = - ss
-    Phi_FC(:,:,1,aion) = Fion(:,:) /Udist
+    Phi_FC(:,:,1,aion) = - Fion(:,:) /Udist
+    write(*,"(A,2x,999e26.16e3)")"F-sum",sum(Fion),sum(Fion(:,1)),sum(Fion(:,2))
 
 ! Eii calc
     Eii_tmp=0d0
@@ -143,15 +153,54 @@ subroutine phonon_band
       if(icell2 == 1 .and. cion == aion) x = x - Udist
       if(icell == 1 .and. bion == aion) x = x + Udist
       Eii_tmp = Eii_tmp + Zion(bion)*Zion(cion)*( &
-        int_pot(x) + int_pot(x + la_full) + int_pot(x - la_full) )
+        int_pot(x) + int_pot(x + la_full) + int_pot(x - la_full) &
+        + int_pot(x + 2d0*la_full) + int_pot(x - 2d0*la_full))
     end do; end do
     end do; end do
 
     write(*,"(A,2x,999e26.16e3)")"Etot,Eii",sum(w(1:NK))*2d0+Eii_tmp,Eii_tmp
-    write(*,"(A,2x,999e26.16e3)")"Force,Udist",Fion(1,aion),Udist
+    write(*,"(A,2x,999e26.16e3)")"Force,Udist",Fion(1,aion),Udist,Rion(aion)/lattice_a
     write(*,"(A,2x,999e26.16e3)")"res.",Udist,sum(w(1:NK))*2d0+Eii_tmp,Fion(1,aion)
 !    write(*,"(A,2x,999e26.16e3)")"res2.",Udist,Eii_tmp,Fion(1,aion)
   end do
+
+  do icell = 2,NK
+    do icell2 = 1,NK
+      icell3 = icell2 + (icell-1)
+      if(icell3 > NK)icell3 = icell3-NK
+      Phi_FC(icell3,:,icell,:) = Phi_FC(icell2,:,1,:) 
+    end do
+  end do
+
+  do ik1 = 1,NK
+    do aion = 1,Nion
+      do bion = 1,Nion
+        zs = 0d0
+        do icell = 1,NK
+          zs = zs + Phi_FC(1,aion,icell,bion) &
+          *exp(-zI*kx(ik1)*(Rion(aion) - Rion(bion) - lattice_a*(icell-1)))
+        end do
+        zDw(aion,bion,ik1)=zs/sqrt(Mion(aion)*Mion(bion))
+      end do
+    end do
+  end do
+! phonon band; assuming Nion = 2
+  allocate(w2_ph(Nion,NK),w_ph(Nion,NK))
+  do ik1 = 1,NK
+    a = real(zDw(1,1,ik1)); c = real(zDw(2,2,ik1)); b2 = abs(zDw(1,2,ik1))**2
+    w2_ph(1,ik1) = 0.5d0*(a+c-sqrt((a-c)**2+4d0*b2))
+    w2_ph(2,ik1) = 0.5d0*(a+c+sqrt((a-c)**2+4d0*b2))
+    if(w2_ph(1,ik1) < 0d0) w2_ph(1,ik1) = 0d0
+    if(w2_ph(2,ik1) < 0d0) w2_ph(2,ik1) = 0d0
+  end do
+  w_ph = sqrt(w2_ph)
+
+  open(10,file=trim(filename)//'_phonon_band.out')
+  do ik1=1,NK
+    write(10,'(100e26.16E3)')kx(ik1),w_ph(:,ik1),w2_ph(:,ik1)
+  end do
+    write(10,'(100e26.16E3)')-kx(1),w_ph(:,1),w2_ph(:,1)
+  close(10)
 
 
   write(*,*)sum(abs(zF_mat(:,:,:)))
@@ -161,6 +210,9 @@ subroutine phonon_band
   end do
   close(20)
   write(*,"(A)")"!End Phonon band calculation"
+
+  write(*,"(A,2x,3e26.16e3)")"+",int_pot_drv1(Udist)
+  write(*,"(A,2x,3e26.16e3)")"-",int_pot_drv1(-Udist)
   
   return
 end subroutine phonon_band

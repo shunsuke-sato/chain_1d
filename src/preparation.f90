@@ -57,7 +57,6 @@ subroutine preparation
       end do
     end do
   end do
-  write(*,*)sum(abs(Veff))
   
   E_ii = 0d0
   do icopy = -10,10

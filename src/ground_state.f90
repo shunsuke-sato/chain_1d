@@ -60,6 +60,7 @@ subroutine ground_state
   do ik=1,NK
     write(10,'(100e26.16E3)')kx(ik),(spe(ib,ik),ib=1,NB)
   end do
+    write(10,'(100e26.16E3)')-kx(1),(spe(ib,1),ib=1,NB)
   close(10)
   
   open(10,file=trim(filename)//'_pot.out')
@@ -77,7 +78,7 @@ subroutine ground_state
 
   write(*,"(A)")"!End Electronic ground state calculation"  
 !  zpsi(:,1:NBocc,:)=zpsi_GS(:,1:NBocc,:)
-  
+!  stop  
   return
 end subroutine ground_state
 !-------10--------20--------30--------40--------50--------60--------70--------80--------90
