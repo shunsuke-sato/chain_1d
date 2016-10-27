@@ -37,6 +37,7 @@ subroutine preparation
   allocate(ztpsi(Nx),zhtpsi(Nx))
   allocate(Veff(Nx),spe(NB,NK))
   allocate(zpsi_GS(Nx,NB,NK))    
+  allocate(zpsi_Ct(NB*NK,NK))    
 
   do ix=1,Nx
     Lx(ix)=dble(ix-1)*H
@@ -44,12 +45,13 @@ subroutine preparation
 
   do ik=1,NK
     kx(ik)=dKx*dble(ik-1-NK/2)
+!    kx(ik)=dKx*dble(ik-1)
   end do
 
 
   
   Veff = 0d0
-  do icopy = -5,5
+  do icopy = -10,10
     do aion = 1,Nion
       do ix=1,Nx
         x = Lx(ix) - Rion(aion) + dble(icopy)*lattice_a
@@ -57,6 +59,10 @@ subroutine preparation
       end do
     end do
   end do
+
+! ion
+  allocate(Phi_FC(NK,Nion,NK,Nion), Fion(NK,Nion), Uion(NK,Nion))
+  allocate(w2_ph(Nion,NK),w_ph(Nion,NK))
   
   E_ii = 0d0
   do icopy = -10,10

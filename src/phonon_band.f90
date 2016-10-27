@@ -31,7 +31,7 @@ subroutine phonon_band
   write(*,"(A)")"!Start Phonon band calculation"
 
   Nmat = NK*NB
-  allocate(Phi_FC(NK,Nion,NK,Nion), Fion(NK,Nion))
+!  allocate(Phi_FC(NK,Nion,NK,Nion), Fion(NK,Nion), Uion(NK,Nion))
   allocate(zWp_mat(NK*NB,NK*NB),zCt(NK*NB), zF_mat_t(NK*NB,NK*NB))
   allocate(zDw(Nion,Nion,NK))
   la_full = lattice_a*dble(NK)
@@ -87,6 +87,13 @@ subroutine phonon_band
 
 
     zH_mat(:,:)=zH0_mat(:,:) + zWp_mat(:,:)
+!    zH_mat(:,:) = -zF_mat_full(:,:,1,1)*Udist - zG_mat_full(:,:,1,1)*Udist**2
+!    write(*,"(999e26.16e3)")zH_mat(1,1), zWp_mat(1,1)
+!    write(*,"(999e26.16e3)")zH_mat(1,2), zWp_mat(1,2)
+!    write(*,"(999e26.16e3)")zH_mat(Nmat/2,Nmat/2), zWp_mat(Nmat/2,Nmat/2)
+!    write(*,"(999e26.16e3)")zH_mat(Nmat/2,Nmat/2+1), zWp_mat(Nmat/2,Nmat/2+1)
+!    write(*,"(999e26.16e3)")Udist,sum(abs(zF_mat_full(:,:,1,1)*Udist+ zWp_mat(:,:))**2)
+!    stop
     Call zheev('V', 'U', Nmat, zH_mat, Nmat, w, work_lp, lwork, rwork, info)
 
 ! Force
@@ -158,9 +165,10 @@ subroutine phonon_band
     end do; end do
     end do; end do
 
-    write(*,"(A,2x,999e26.16e3)")"Etot,Eii",sum(w(1:NK))*2d0+Eii_tmp,Eii_tmp
+    write(*,"(A,2x,999e26.16e3)")"Etot,Eel,Eii",sum(w(1:NK))*2d0+Eii_tmp, &
+      sum(w(1:NK))*2d0,Eii_tmp
     write(*,"(A,2x,999e26.16e3)")"Force,Udist",Fion(1,aion),Udist,Rion(aion)/lattice_a
-    write(*,"(A,2x,999e26.16e3)")"res.",Udist,sum(w(1:NK))*2d0+Eii_tmp,Fion(1,aion)
+    write(*,"(A,2x,999e26.16e3)")"res.",Udist,sum(w(1:NK))*2d0+Eii_tmp,sum(w(1:NK))*2d0,Eii_tmp
 !    write(*,"(A,2x,999e26.16e3)")"res2.",Udist,Eii_tmp,Fion(1,aion)
   end do
 
@@ -185,7 +193,7 @@ subroutine phonon_band
     end do
   end do
 ! phonon band; assuming Nion = 2
-  allocate(w2_ph(Nion,NK),w_ph(Nion,NK))
+
   do ik1 = 1,NK
     a = real(zDw(1,1,ik1)); c = real(zDw(2,2,ik1)); b2 = abs(zDw(1,2,ik1))**2
     w2_ph(1,ik1) = 0.5d0*(a+c-sqrt((a-c)**2+4d0*b2))

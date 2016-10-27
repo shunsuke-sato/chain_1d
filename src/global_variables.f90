@@ -7,7 +7,8 @@
 module global_variables
 
 ! Parameters
-  real(8),parameter :: pi=3.14159265358979323846d0
+!  real(8),parameter :: pi=3.14159265358979323846d0
+  real(8),parameter :: pi=4d0*atan(1d0)
   complex(8),parameter :: zI=(0d0,1d0)
   real(8),parameter :: a_B=0.529177d0,Ry=13.6058d0
 
@@ -22,16 +23,20 @@ module global_variables
   real(8) :: L_coef(-2:2),G_coef(-2:2)
   integer :: Nelec
   real(8),allocatable :: spe(:,:)
-  complex(8),allocatable :: zH_mat(:,:),zH0_mat(:,:),zF_mat(:,:,:)
+  complex(8),allocatable :: zpsi_Ct(:,:)
+  complex(8),allocatable :: zH_mat(:,:),zH0_mat(:,:),zF_mat(:,:,:),zG_mat(:,:,:)
+  complex(8),allocatable :: zF_mat_full(:,:,:,:),zG_mat_full(:,:,:,:)
+  complex(8),allocatable :: zG3_mat(:,:,:)
+  complex(8),allocatable :: zG3_mat_full(:,:,:,:)
   
 ! Ions
   integer,parameter :: Nion = 2
   real(8) :: Zion(Nion), Rion(Nion), Mion(Nion)
-  real(8),allocatable :: Phi_FC(:,:,:,:),Fion(:,:)
+  real(8),allocatable :: Phi_FC(:,:,:,:),Fion(:,:), Uion(:,:)
   real(8),allocatable :: w2_ph(:,:),w_ph(:,:)
 
 ! Energy
-  real(8) :: E_ii
+  real(8) :: E_tot, E_elec, E_ii
 
 ! Laser fields
   real(8) :: Acx
@@ -58,6 +63,27 @@ contains
    
     return
   end function int_pot_drv1
+
+
+  function int_pot_drv2(x)
+    real(8) :: int_pot_drv2,x
+    real(8),parameter :: sg = 1.0d0, v0 = 0.3d0
+    
+    int_pot_drv2 = v0/(sqrt(2d0*pi)*sg)*(-1d0/sg**2+x**2/sg**4)*exp(-0.5d0*(x/sg)**2)
+!    int_pot_drv2 = (-1d0/sg**2+x**2/sg**4)*int_pot(x)
+   
+    return
+  end function int_pot_drv2
+
+  function int_pot_drv3(x)
+    real(8) :: int_pot_drv3,x
+    real(8),parameter :: sg = 1.0d0, v0 = 0.3d0
+    
+    int_pot_drv3 = v0/(sqrt(2d0*pi)*sg)*(2d0*(x/sg**2)/sg**2-x/sg**2) &
+      *exp(-0.5d0*(x/sg)**2)
+   
+    return
+  end function int_pot_drv3
 
 end module global_variables
 !-------10--------20--------30--------40--------50--------60--------70--------80--------90

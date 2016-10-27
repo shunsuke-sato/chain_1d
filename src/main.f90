@@ -14,11 +14,15 @@ program main
   character(50) :: cnum
   real(8),allocatable :: nex_k(:,:,:)
 
+
   call set_parameters
   call preparation
   call ground_state
+! phonon calculation
   call Electron_matrix_element
   call phonon_band
+  write(*,*)"phon_band_tst"
+  call phonon_band_tst
 
   stop
 end program main

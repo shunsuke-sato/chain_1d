@@ -10,7 +10,7 @@ subroutine set_parameters
 ! Set parameters
   NK = 32
   Nx = 256
-  NB=4
+  NB=5
   NBocc=1
   Nelec=1
   lattice_a = 6.0d0 ! 6.0d0

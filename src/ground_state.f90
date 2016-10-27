@@ -7,7 +7,7 @@
 subroutine ground_state
   use global_variables
   implicit none
-  complex(8) :: za(Nx,Nx),zv(Nx,Nx)
+  complex(8),allocatable :: za(:,:),zv(:,:)
   real(8) :: ar(Nx,Nx),ai(Nx,Nx),vr(Nx,Nx),vi(Nx,Nx)
   real(8) :: e(Nx)
   integer :: ix,jx,jx2,ik,ib
@@ -17,12 +17,14 @@ subroutine ground_state
   complex(8),allocatable :: work_lp(:)
   real(8),allocatable :: rwork(:),w(:)
   integer :: info
+
   lwork=6*Nx**2
   allocate(work_lp(lwork),rwork(3*Nx-2),w(Nx))
 !LAPACK ==
 
   write(*,"(A)")"!Start Electronic ground state calculation"
   Acx = 0d0
+  allocate(za(Nx,Nx),zv(Nx,Nx))
 
   do ik=1,NK
     za=0d0
@@ -37,6 +39,7 @@ subroutine ground_state
     end do
 
     Call zheev('V', 'U', Nx, za, Nx, w, work_lp, lwork, rwork, info)
+
     do ib=1,NB
       s=sum(abs(za(:,ib))**2)*H
       zpsi_GS(:,ib,ik)=za(:,ib)/sqrt(s)
