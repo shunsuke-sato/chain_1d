@@ -15,7 +15,8 @@ subroutine electron_matrix_element
   real(8) :: tmp
   complex(8) :: zs
 
-  allocate(zH_mat(NK*NB,NK*NB),zH0_mat(NK*NB,NK*NB))
+  allocate(zH_mat(NK*NB,NK*NB),zH0_mat(NK*NB,NK*NB),zW_mat(NK*NB,NK*NB))
+  allocate(zP_mat(NB,NB,NK))
   allocate(zF_mat(NK*NB,NK*NB,Nion),zG_mat(NK*NB,NK*NB,Nion))
   allocate(zF_mat_full(NK*NB,NK*NB,NK,Nion),zG_mat_full(NK*NB,NK*NB,NK,Nion))
   allocate(zG3_mat(NK*NB,NK*NB,Nion),zG3_mat_full(NK*NB,NK*NB,NK,Nion))
@@ -29,6 +30,26 @@ subroutine electron_matrix_element
     is1=is1+1
     zH0_mat(is1,is1)=spe(ib1,ik1)
   end do; end do
+
+! Pmat
+  zP_mat = 0d0
+  do ik1 = 1,NK
+    do ib1 =1,NB
+      ztpsi(:) = zpsi_GS(:,ib1,ik1)
+      call ppsi(ik1)
+      do ib2=ib1,NB
+        zs = sum(conjg(zpsi_GS(:,ib2,ik1))*zhtpsi(:))*H
+        zP_mat(ib2,ib1,ik1)=conjg(zs)
+        zP_mat(ib1,ib2,ik1)=zs
+      end do
+    end do
+  end do
+
+  open(21,file="pmat.out")
+  do ik1 = 1,NK
+    write(21,"(999e26.16e3)")kx(ik1),abs(zP_mat(1,2,ik1))**2
+  end do
+  close(21)
 
 ! Force matrix
 
@@ -57,7 +78,6 @@ subroutine electron_matrix_element
     is1=0
     do ik1=1,NK; do ib1=1,NB
       is1=is1+1
-      write(*,*)aion,is1
       is2=0
       do ik2=1,NK; do ib2=1,NB
         is2=is2+1

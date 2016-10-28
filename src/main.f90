@@ -23,7 +23,9 @@ program main
   call phonon_band
   write(*,*)"phon_band_tst"
   call phonon_band_tst
-
+!  stop
+! time-dependent run
+  call time_dependent_run
   stop
 end program main
 !-------10--------20--------30--------40--------50--------60--------70--------80--------90

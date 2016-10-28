@@ -37,7 +37,8 @@ subroutine preparation
   allocate(ztpsi(Nx),zhtpsi(Nx))
   allocate(Veff(Nx),spe(NB,NK))
   allocate(zpsi_GS(Nx,NB,NK))    
-  allocate(zpsi_Ct(NB*NK,NK))    
+  allocate(zpsi_Ct(NB*NK,NK),zpsi_Ct_t(NB*NK,NK),zhpsi_Ct_t(NB*NK,NK))
+  allocate( zpsi_Ct_t_Lan(NB*NK,NK,0:Nlanczos)); zpsi_Ct_t_Lan = 0d0
 
   do ix=1,Nx
     Lx(ix)=dble(ix-1)*H
@@ -62,6 +63,7 @@ subroutine preparation
 
 ! ion
   allocate(Phi_FC(NK,Nion,NK,Nion), Fion(NK,Nion), Uion(NK,Nion))
+  allocate(Dph_mat(NK*Nion,NK*Nion))
   allocate(w2_ph(Nion,NK),w_ph(Nion,NK))
   
   E_ii = 0d0
