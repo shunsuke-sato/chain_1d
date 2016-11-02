@@ -13,7 +13,7 @@ subroutine set_parameters
   NB=6
   NBocc=1
   Nelec=1
-  lattice_a = 10.5d0 ! 6.0d0
+  lattice_a = 10.30d0 ! 6.0d0
 
 ! ion parameters
   Zion(1) = 2d0*2d0/3d0; Mion(1) = 70d0*2000d0

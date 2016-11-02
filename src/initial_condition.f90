@@ -104,7 +104,7 @@ subroutine distortion
   zCt_tmp(:,:) = zpsi_Ct
   zfact = 1d0
   do iexp =1,16
-    zfact = zfact*(-zI*dist)
+    zfact = zfact*(-zI*dist)/dble(iexp)
     zhCt_tmp = matmul(zW_mat,zCt_tmp)
     zpsi_Ct = zpsi_Ct + zfact*zhCt_tmp
 

@@ -57,7 +57,7 @@ module global_variables
 
 
 ! potential parameters
-  real(8),parameter :: sg_ii = 2.5d0, v0_ii = 5d2   !sg = 2.0d0, v0 = 1.0d0  
+  real(8),parameter :: sg_ii = 2.5d0, v0_ii = 1d2   !sg = 2.0d0, v0 = 1.0d0  
   real(8),parameter :: sg_ii2 = 2d0*sg_ii, v0_ii2 = -0.75d0*v0_ii   !sg = 2.0d0, v0 = 1.0d0  
   real(8),parameter :: sg_ei = 2.5d0, v0_ei = 1.00   !sg = 2.0d0, v0 = 1.0d0  
 contains
