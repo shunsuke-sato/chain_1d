@@ -60,11 +60,11 @@ subroutine electron_matrix_element
     do icell=1,NK
       do ix=1,Nx
         x = Lx(ix) + lattice_a*(icell-1)
-        tmp= int_pot(x-Rion(aion)) &
-              +int_pot(x-Rion(aion)+la_full) &
-              +int_pot(x-Rion(aion)-la_full) &
-              +int_pot(x-Rion(aion)+2d0*la_full) &
-              +int_pot(x-Rion(aion)-2d0*la_full) 
+        tmp= int_pot_ei(x-Rion(aion)) &
+              +int_pot_ei(x-Rion(aion)+la_full) &
+              +int_pot_ei(x-Rion(aion)-la_full) &
+              +int_pot_ei(x-Rion(aion)+2d0*la_full) &
+              +int_pot_ei(x-Rion(aion)-2d0*la_full) 
         tmp = Zion(aion)*tmp
         if(abs(tmp)>1d-20)iflag_cell(icell,aion)=1
              
@@ -91,11 +91,11 @@ subroutine electron_matrix_element
             zs = zs + Zion(aion)*exp(zI*(kx(ik2)-kx(ik1))*x) &
               *conjg(zpsi_GS(ix,ib1,ik1))*zpsi_GS(ix,ib2,ik2) &
               *( &
-              int_pot_drv1(x-Rion(aion)) &
-              +int_pot_drv1(x-Rion(aion)+la_full) &
-              +int_pot_drv1(x-Rion(aion)-la_full) &
-              +int_pot_drv1(x-Rion(aion)+2d0*la_full) &
-              +int_pot_drv1(x-Rion(aion)-2d0*la_full) &
+              int_pot_drv1_ei(x-Rion(aion)) &
+              +int_pot_drv1_ei(x-Rion(aion)+la_full) &
+              +int_pot_drv1_ei(x-Rion(aion)-la_full) &
+              +int_pot_drv1_ei(x-Rion(aion)+2d0*la_full) &
+              +int_pot_drv1_ei(x-Rion(aion)-2d0*la_full) &
               )
           end do
         end do
@@ -143,11 +143,11 @@ subroutine electron_matrix_element
             zs = zs + Zion(aion)*exp(zI*(kx(ik2)-kx(ik1))*x) &
               *conjg(zpsi_GS(ix,ib1,ik1))*zpsi_GS(ix,ib2,ik2) &
               *( &
-              int_pot_drv2(x-Rion(aion)) &
-              +int_pot_drv2(x-Rion(aion)+la_full) &
-              +int_pot_drv2(x-Rion(aion)-la_full) &
-              +int_pot_drv2(x-Rion(aion)+2d0*la_full) &
-              +int_pot_drv2(x-Rion(aion)-2d0*la_full) &
+              int_pot_drv2_ei(x-Rion(aion)) &
+              +int_pot_drv2_ei(x-Rion(aion)+la_full) &
+              +int_pot_drv2_ei(x-Rion(aion)-la_full) &
+              +int_pot_drv2_ei(x-Rion(aion)+2d0*la_full) &
+              +int_pot_drv2_ei(x-Rion(aion)-2d0*la_full) &
               )
           end do
         end do
@@ -196,11 +196,11 @@ subroutine electron_matrix_element
             zs = zs + Zion(aion)*exp(zI*(kx(ik2)-kx(ik1))*x) &
               *conjg(zpsi_GS(ix,ib1,ik1))*zpsi_GS(ix,ib2,ik2) &
               *( &
-              int_pot_drv3(x-Rion(aion)) &
-              +int_pot_drv3(x-Rion(aion)+la_full) &
-              +int_pot_drv3(x-Rion(aion)-la_full) &
-              +int_pot_drv3(x-Rion(aion)+2d0*la_full) &
-              +int_pot_drv3(x-Rion(aion)-2d0*la_full) &
+              int_pot_drv3_ei(x-Rion(aion)) &
+              +int_pot_drv3_ei(x-Rion(aion)+la_full) &
+              +int_pot_drv3_ei(x-Rion(aion)-la_full) &
+              +int_pot_drv3_ei(x-Rion(aion)+2d0*la_full) &
+              +int_pot_drv3_ei(x-Rion(aion)-2d0*la_full) &
               )
           end do
         end do

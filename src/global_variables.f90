@@ -57,43 +57,95 @@ module global_variables
 
 
 ! potential parameters
-  real(8),parameter :: sg = 2.0d0, v0 = 1.00   !sg = 2.0d0, v0 = 1.0d0  
+  real(8),parameter :: sg_ii = 2.5d0, v0_ii = 5d2   !sg = 2.0d0, v0 = 1.0d0  
+  real(8),parameter :: sg_ii2 = 2d0*sg_ii, v0_ii2 = -0.75d0*v0_ii   !sg = 2.0d0, v0 = 1.0d0  
+  real(8),parameter :: sg_ei = 2.5d0, v0_ei = 1.00   !sg = 2.0d0, v0 = 1.0d0  
 contains
 
-  function int_pot(x)
-    real(8) :: int_pot,x
+! Ion-ion interaction
+  function int_pot_ii(x)
+    real(8) :: int_pot_ii,x
     
-    int_pot = v0/(sqrt(2d0*pi)*sg)*exp(-0.5d0*(x/sg)**2)
+    int_pot_ii = v0_ii/(sqrt(2d0*pi)*sg_ii)*exp(-0.5d0*(x/sg_ii)**2)
+    int_pot_ii = int_pot_ii &
+      +v0_ii2/(sqrt(2d0*pi)*sg_ii2)*exp(-0.5d0*(x/sg_ii2)**2)
    
     return
-  end function int_pot
+  end function int_pot_ii
 
-  function int_pot_drv1(x)
-    real(8) :: int_pot_drv1,x
+  function int_pot_drv1_ii(x)
+    real(8) :: int_pot_drv1_ii,x
     
-    int_pot_drv1 = v0/(sqrt(2d0*pi)*sg)*(-x/sg**2)*exp(-0.5d0*(x/sg)**2)
+    int_pot_drv1_ii = v0_ii/(sqrt(2d0*pi)*sg_ii)*(-x/sg_ii**2) &
+      *exp(-0.5d0*(x/sg_ii)**2)
+
+    int_pot_drv1_ii = int_pot_drv1_ii &
+      +v0_ii2/(sqrt(2d0*pi)*sg_ii2)*(-x/sg_ii2**2) &
+      *exp(-0.5d0*(x/sg_ii2)**2)
    
     return
-  end function int_pot_drv1
+  end function int_pot_drv1_ii
 
 
-  function int_pot_drv2(x)
-    real(8) :: int_pot_drv2,x
+  function int_pot_drv2_ii(x)
+    real(8) :: int_pot_drv2_ii,x
     
-    int_pot_drv2 = v0/(sqrt(2d0*pi)*sg)*(-1d0/sg**2+x**2/sg**4)*exp(-0.5d0*(x/sg)**2)
+    int_pot_drv2_ii = v0_ii/(sqrt(2d0*pi)*sg_ii)*(-1d0/sg_ii**2+x**2/sg_ii**4) &
+      *exp(-0.5d0*(x/sg_ii)**2)
+    int_pot_drv2_ii = int_pot_drv2_ii &
+      +v0_ii2/(sqrt(2d0*pi)*sg_ii2)*(-1d0/sg_ii2**2+x**2/sg_ii2**4) &
+      *exp(-0.5d0*(x/sg_ii2)**2)
 !    int_pot_drv2 = (-1d0/sg**2+x**2/sg**4)*int_pot(x)
    
     return
-  end function int_pot_drv2
+  end function int_pot_drv2_ii
 
-  function int_pot_drv3(x)
-    real(8) :: int_pot_drv3,x
+  function int_pot_drv3_ii(x)
+    real(8) :: int_pot_drv3_ii,x
     
-    int_pot_drv3 = v0/(sqrt(2d0*pi)*sg)*(2d0*(x/sg**2)/sg**2-x/sg**2) &
-      *exp(-0.5d0*(x/sg)**2)
+    int_pot_drv3_ii = v0_ii/(sqrt(2d0*pi)*sg_ii)*(2d0*(x/sg_ii**2)/sg_ii**2-x/sg_ii**2) &
+      *exp(-0.5d0*(x/sg_ii)**2)
    
     return
-  end function int_pot_drv3
+  end function int_pot_drv3_ii
+
+! electron-ion interaction
+  function int_pot_ei(x)
+    real(8) :: int_pot_ei,x
+    
+    int_pot_ei = v0_ei/(sqrt(2d0*pi)*sg_ei)*exp(-0.5d0*(x/sg_ei)**2)
+   
+    return
+  end function int_pot_ei
+
+  function int_pot_drv1_ei(x)
+    real(8) :: int_pot_drv1_ei,x
+    
+    int_pot_drv1_ei = v0_ei/(sqrt(2d0*pi)*sg_ei)*(-x/sg_ei**2) &
+      *exp(-0.5d0*(x/sg_ei)**2)
+   
+    return
+  end function int_pot_drv1_ei
+
+
+  function int_pot_drv2_ei(x)
+    real(8) :: int_pot_drv2_ei,x
+    
+    int_pot_drv2_ei = v0_ei/(sqrt(2d0*pi)*sg_ei)*(-1d0/sg_ei**2+x**2/sg_ei**4) &
+      *exp(-0.5d0*(x/sg_ei)**2)
+!    int_pot_drv2 = (-1d0/sg**2+x**2/sg**4)*int_pot(x)
+   
+    return
+  end function int_pot_drv2_ei
+
+  function int_pot_drv3_ei(x)
+    real(8) :: int_pot_drv3_ei,x
+    
+    int_pot_drv3_ei = v0_ei/(sqrt(2d0*pi)*sg_ei)*(2d0*(x/sg_ei**2)/sg_ei**2-x/sg_ei**2) &
+      *exp(-0.5d0*(x/sg_ei)**2)
+   
+    return
+  end function int_pot_drv3_ei
 
 end module global_variables
 !-------10--------20--------30--------40--------50--------60--------70--------80--------90

@@ -42,9 +42,9 @@ subroutine phonon_band
     do icell=1,NK
       do ix=1,Nx
         x = Lx(ix) + lattice_a*(icell-1)
-        tmp= int_pot(x-Rion(aion)) &
-              +int_pot(x-Rion(aion)+la_full) &
-              +int_pot(x-Rion(aion)-la_full)
+        tmp= int_pot_ei(x-Rion(aion)) &
+              +int_pot_ei(x-Rion(aion)+la_full) &
+              +int_pot_ei(x-Rion(aion)-la_full)
         tmp = Zion(aion)*tmp
         if(abs(tmp)>1d-16)iflag_cell(icell,aion)=1
              
@@ -73,9 +73,9 @@ subroutine phonon_band
             zs = zs - exp(zI*(kx(ik2)-kx(ik1))*x) &
               *conjg(zpsi_GS(ix,ib1,ik1))*zpsi_GS(ix,ib2,ik2) &
               *Zion(aion)*( &
-              int_pot(x-(Rion(aion)+Udist))-int_pot(x-Rion(aion)) &
-              +int_pot(x-(Rion(aion)+Udist)+la_full)-int_pot(x-Rion(aion)+la_full) &
-              +int_pot(x-(Rion(aion)+Udist)-la_full)-int_pot(x-Rion(aion)-la_full) &
+              int_pot_ei(x-(Rion(aion)+Udist))-int_pot_ei(x-Rion(aion)) &
+              +int_pot_ei(x-(Rion(aion)+Udist)+la_full)-int_pot_ei(x-Rion(aion)+la_full) &
+              +int_pot_ei(x-(Rion(aion)+Udist)-la_full)-int_pot_ei(x-Rion(aion)-la_full) &
               )
           end do
         end do
@@ -133,9 +133,9 @@ subroutine phonon_band
             x = Rion(bion) + dble(icell-1)*lattice_a &
               - (Rion(cion) + dble(icell2-1)*lattice_a)
             if(icell2 == 1 .and. cion == aion) x = x - Udist
-            Fion(icell,bion)=Fion(icell,bion) - 2d0*Zion(bion)*Zion(cion)*( &
-              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) &
-              + int_pot_drv1(x + 2d0*la_full) + int_pot_drv1(x - 2d0*la_full) )
+            Fion(icell,bion)=Fion(icell,bion) - Zion(bion)*Zion(cion)*( &
+              int_pot_drv1_ii(x) + int_pot_drv1_ii(x + la_full) + int_pot_drv1_ii(x - la_full) &
+              + int_pot_drv1_ii(x + 2d0*la_full) + int_pot_drv1_ii(x - 2d0*la_full) )
 
 !            write(*,"(3I6,e26.16e3)")aion,bion,cion,- 2d0*Zion(bion)*Zion(cion)*( &
 !              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) &
@@ -160,10 +160,11 @@ subroutine phonon_band
       if(icell2 == 1 .and. cion == aion) x = x - Udist
       if(icell == 1 .and. bion == aion) x = x + Udist
       Eii_tmp = Eii_tmp + Zion(bion)*Zion(cion)*( &
-        int_pot(x) + int_pot(x + la_full) + int_pot(x - la_full) &
-        + int_pot(x + 2d0*la_full) + int_pot(x - 2d0*la_full))
+        int_pot_ii(x) + int_pot_ii(x + la_full) + int_pot_ii(x - la_full) &
+        + int_pot_ii(x + 2d0*la_full) + int_pot_ii(x - 2d0*la_full))
     end do; end do
     end do; end do
+    Eii_tmp = 0.5d0*Eii_tmp
 
     write(*,"(A,2x,999e26.16e3)")"Etot,Eel,Eii",sum(w(1:NK))*2d0+Eii_tmp, &
       sum(w(1:NK))*2d0,Eii_tmp
@@ -219,8 +220,8 @@ subroutine phonon_band
   close(20)
   write(*,"(A)")"!End Phonon band calculation"
 
-  write(*,"(A,2x,3e26.16e3)")"+",int_pot_drv1(Udist)
-  write(*,"(A,2x,3e26.16e3)")"-",int_pot_drv1(-Udist)
+  write(*,"(A,2x,3e26.16e3)")"+",int_pot_drv1_ii(Udist)
+  write(*,"(A,2x,3e26.16e3)")"-",int_pot_drv1_ii(-Udist)
   
   return
 end subroutine phonon_band

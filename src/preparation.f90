@@ -56,7 +56,7 @@ subroutine preparation
     do aion = 1,Nion
       do ix=1,Nx
         x = Lx(ix) - Rion(aion) + dble(icopy)*lattice_a
-        Veff(ix) = Veff(ix) -Zion(aion)*int_pot(x)
+        Veff(ix) = Veff(ix) -Zion(aion)*int_pot_ei(x)
       end do
     end do
   end do
@@ -67,17 +67,16 @@ subroutine preparation
   allocate(w2_ph(Nion,NK),w_ph(Nion,NK))
   
   E_ii = 0d0
-  do icopy = -10,10
-    do aion = 1,Nion
-      if(icopy /= 0)E_ii = E_ii &
-        + Zion(aion)*Zion(aion)*int_pot(Rion(aion)-Rion(aion)+lattice_a*icopy)
-      do bion = aion+1,Nion
+  do aion = 1,Nion
+    do bion = 1,Nion
+      do icopy = -10,10
+        if(aion == bion .and. icopy == 0)cycle
         E_ii = E_ii &
-          + Zion(aion)*Zion(bion)*int_pot(Rion(aion)-Rion(bion)+lattice_a*icopy)
+          + Zion(aion)*Zion(bion)*int_pot_ii(Rion(aion)-Rion(bion)+lattice_a*icopy)
       end do
     end do
   end do
-  E_ii = 2d0*E_ii ! To be checked
+  E_ii = 0.5d0*E_ii
 
   return
 end subroutine preparation

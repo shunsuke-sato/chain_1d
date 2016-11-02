@@ -22,9 +22,10 @@ subroutine total_energy
         + Uion(icell,aion) - Uion(icell2,bion)
           
       E_ii = E_ii + Zion(aion)*Zion(bion)*( &
-        int_pot(x) + int_pot(x + la_full) + int_pot(x - la_full) )
+        int_pot_ii(x) + int_pot_ii(x + la_full) + int_pot_ii(x - la_full) )
     end do; end do
   end do; end do
+  E_ii = 0.5d0*E_ii
 
   E_tot = E_elec + E_ii
   

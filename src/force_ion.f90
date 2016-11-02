@@ -29,8 +29,8 @@ subroutine force_ion
             - (Rion(bion) + dble(icell2-1)*lattice_a) &
             + Uion(icell,aion) - Uion(icell2,bion)
           
-          Fion(icell,aion)=Fion(icell,aion) - 2d0*Zion(aion)*Zion(bion)*( &
-            int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full))
+          Fion(icell,aion)=Fion(icell,aion) - Zion(aion)*Zion(bion)*( &
+        int_pot_drv1_ii(x) + int_pot_drv1_ii(x + la_full) + int_pot_drv1_ii(x - la_full))
 
 !            write(*,"(3I6,e26.16e3)")aion,bion,cion,- 2d0*Zion(bion)*Zion(cion)*( &
 !              int_pot_drv1(x) + int_pot_drv1(x + la_full) + int_pot_drv1(x - la_full) &
