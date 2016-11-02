@@ -14,6 +14,7 @@ subroutine dt_evolve
   Nmax = NB*NK
 
   zW_mat = zH_mat - zH0_mat
+!  zW_mat = zH_mat
 !  call dt_half_evolve_Taylor
   call dt_half_evolve_Lanczos
 
@@ -26,6 +27,7 @@ subroutine dt_evolve
   call prep_Hmat
 
   zW_mat = zH_mat - zH0_mat
+!  zW_mat = zH_mat
 !  call dt_half_evolve_Taylor
   call dt_half_evolve_Lanczos
 

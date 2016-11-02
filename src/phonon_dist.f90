@@ -59,7 +59,9 @@ subroutine phonon_dist
   do is1 =2,NK*Nion
 
     call normal_random_number(x1,x2)
-    ss = x1/sqrt(beta_KB*w(is1))
+    ss = x1/sqrt(beta_KB*w(is1)) !Boltzmann distribution
+    x2 = 2d0*tanh(beta_KB*sqrt(w(is1))/2d0)*sqrt(w(is1)) !Quantum distribution
+    ss = x1/sqrt(x2) !Quantum distribution
     call random_number(x2)
 
     is2 = 0
@@ -76,6 +78,8 @@ subroutine phonon_dist
   
   write(*,*)"U",sqrt(sum(Uion**2)/dble(NK*Nion))
   write(*,*)"V",sqrt(sum(Vion**2)/dble(NK*Nion))
+  write(*,*)"U-max",maxval(abs(Uion))
+  write(*,*)"V-max",maxval(abs(Vion))
 
 !  stop
   return

@@ -8,7 +8,7 @@ subroutine set_parameters
   use global_variables
 
 ! Set parameters
-  NK = 16
+  NK = 8
   Nx = 256
   NB=6
   NBocc=1
@@ -25,7 +25,7 @@ subroutine set_parameters
 
 
 ! time-propagation
-  dt = 0.25d0
+  dt = 1.0d0
   Nt = 200000
 
   filename = "tst"

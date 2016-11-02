@@ -26,7 +26,7 @@ subroutine initial_condition
 
 
 ! initial conditions for ions ==
-  beta_KB = 25.7d-3/27.2d0; beta_KB = 1d0/beta_KB
+  beta_KB = 25.8d-3/27.2d0; beta_KB = 1d0/beta_KB
   call phonon_dist
 !  Vion = 0d0
 !  Uion = 0d0
@@ -103,13 +103,25 @@ subroutine distortion
 
   zCt_tmp(:,:) = zpsi_Ct
   zfact = 1d0
-  do iexp =1,16
+  do iexp =1,24
     zfact = zfact*(-zI*dist)/dble(iexp)
     zhCt_tmp = matmul(zW_mat,zCt_tmp)
     zpsi_Ct = zpsi_Ct + zfact*zhCt_tmp
 
     zCt_tmp = zhCt_tmp
   end do
+
+
+  do is1=1,NK
+    do is2=1,is1-1
+      zfact = sum(conjg(zpsi_Ct(:,is2))*zpsi_Ct(:,is1))
+      zpsi_Ct(:,is1) = zpsi_Ct(:,is1) - zfact*zpsi_Ct(:,is2)
+    end do
+    ss = sum(abs(zpsi_Ct(:,is1))**2)
+    write(*,*)is1,ss
+    zpsi_Ct(:,is1) = zpsi_Ct(:,is1)/sqrt(ss)
+  end do
+
 
   return
 end subroutine distortion

@@ -34,7 +34,7 @@ module global_variables
   complex(8),allocatable :: zG3_mat(:,:,:)
   complex(8),allocatable :: zG3_mat_full(:,:,:,:)
 ! Lanczos method
-  integer,parameter :: Nlanczos = 4
+  integer,parameter :: Nlanczos = 9
   complex(8),allocatable :: zpsi_Ct_t_Lan(:,:,:)
   
 ! Ions
