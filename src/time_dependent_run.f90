@@ -37,7 +37,7 @@ subroutine time_dependent_run
 
     if(mod(it,10) == 0) call write_neh_dist(it)
 
-    if(dble(it)*dt*0.02418d0 > 50d0)exit
+    if(dble(it)*dt*0.02418d0 > 1000d0)exit
   end do
   close(41)
 

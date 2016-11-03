@@ -8,9 +8,9 @@ subroutine set_parameters
   use global_variables
 
 ! Set parameters
-  NK = 8
+  NK = 64
   Nx = 256
-  NB=6
+  NB=4
   NBocc=1
   Nelec=1
   lattice_a = 10.30d0 ! 6.0d0

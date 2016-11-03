@@ -72,7 +72,7 @@ end subroutine initial_condition
 subroutine distortion
   use global_variables
   implicit none
-  real(8),parameter :: dist = 0.6d0,sig=0.05d0
+  real(8),parameter :: dist = 1.0d0,sig=0.05d0
   integer :: ik1,ib1,is1,ik2,ib2,is2,iexp
   real(8) :: ss,k0
   complex(8) :: zCt_tmp(NK*NB,NK),zhCt_tmp(NK*NB,NK),zfact
