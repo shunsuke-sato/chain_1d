@@ -55,11 +55,16 @@ module global_variables
 ! I/O parameter
   character(50) :: filename
 
+! MPI
+  include 'mpif.h'
+  integer :: Myrank,Nprocs,ierr
+  real(8) :: E_tot_MT,E_elec_MT,Ekin_ion_MT,E_ii_MT
 
 ! potential parameters
   real(8),parameter :: sg_ii = 2.5d0, v0_ii = 1d2   !sg = 2.0d0, v0 = 1.0d0  
   real(8),parameter :: sg_ii2 = 2d0*sg_ii, v0_ii2 = -0.75d0*v0_ii   !sg = 2.0d0, v0 = 1.0d0  
   real(8),parameter :: sg_ei = 2.5d0, v0_ei = 1.00   !sg = 2.0d0, v0 = 1.0d0  
+
 contains
 
 ! Ion-ion interaction

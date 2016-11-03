@@ -1,4 +1,4 @@
-FC = gfortran -O0 ## gfotran
+FC = mpif90 -O2 ## gfotran
 
 LN = -llapack -lblas #other
 

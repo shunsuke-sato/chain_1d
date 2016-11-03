@@ -8,7 +8,7 @@ subroutine set_parameters
   use global_variables
 
 ! Set parameters
-  NK = 64
+  NK = 8
   Nx = 256
   NB=4
   NBocc=1

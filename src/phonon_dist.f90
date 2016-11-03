@@ -1,8 +1,8 @@
 subroutine phonon_dist
   use global_variables
   implicit none
-  integer :: is1,is2, aion,bion, icell, icell2
-  real(8) :: ss,x1,x2
+  integer :: is1,is2, aion,bion, icell, icell2, irank
+  real(8) :: ss,x1,x2,tmp
 !LAPACK ==
   integer :: lwork,Nmat
   real(8),allocatable :: work_lp(:),Amat(:,:)
@@ -47,39 +47,35 @@ subroutine phonon_dist
     end do
   end do
 
-  ss = 0d0
-  do is1 = 1,Nmat
-    ss = ss + abs(w2(is1)-w(is1))
-    write(*,"(I4,2x,999e16.6e3)")is1,w2(is1)-w(is1),w2(is1),w(is1)
-  end do
-  write(*,"(999e16.6e3)")ss
-
   Uion =0d0
   Vion = 0d0
-  do is1 =2,NK*Nion
+  do irank = 0,Nprocs-1
+    do is1 =2,NK*Nion
 
-    call normal_random_number(x1,x2)
-    ss = x1/sqrt(beta_KB*w(is1)) !Boltzmann distribution
-    x2 = 2d0*tanh(beta_KB*sqrt(w(is1))/2d0)*sqrt(w(is1)) !Quantum distribution
-    ss = x1/sqrt(x2) !Quantum distribution
-    call random_number(x2)
+      call normal_random_number(x1,x2)
+      call random_number(x2)
+      if(irank /= myrank)cycle
+!    ss = x1/sqrt(beta_KB*w(is1)) !Boltzmann distribution
+      tmp = 2d0*tanh(beta_KB*sqrt(w(is1))/2d0)*sqrt(w(is1)) !Quantum distribution
+      ss = x1/sqrt(tmp) !Quantum distribution
 
-    is2 = 0
-    do aion = 1,Nion
-      do icell = 1,NK
-        is2 = is2 + 1
-        Uion(icell,aion) = Uion(icell,aion) &
-          + ss*sin(2d0*pi*x2)/sqrt(Mion(aion))*Amat(is2,is1)
-        Vion(icell,aion) = Vion(icell,aion) &
-          + ss*sqrt(w(is1)/Mion(aion))*cos(2d0*pi*x2)*Amat(is2,is1)
+      is2 = 0
+      do aion = 1,Nion
+        do icell = 1,NK
+          is2 = is2 + 1
+          Uion(icell,aion) = Uion(icell,aion) &
+            + ss*sin(2d0*pi*x2)/sqrt(Mion(aion))*Amat(is2,is1)
+          Vion(icell,aion) = Vion(icell,aion) &
+            + ss*sqrt(w(is1)/Mion(aion))*cos(2d0*pi*x2)*Amat(is2,is1)
+        end do
       end do
     end do
   end do
   
-  write(*,*)"U",sqrt(sum(Uion**2)/dble(NK*Nion))
-  write(*,*)"V",sqrt(sum(Vion**2)/dble(NK*Nion))
-  write(*,*)"U-max",maxval(abs(Uion))
-  write(*,*)"V-max",maxval(abs(Vion))
+  write(*,*)"rank,U",myrank,sqrt(sum(Uion**2)/dble(NK*Nion))
+  write(*,*)"rank,V",myrank,sqrt(sum(Vion**2)/dble(NK*Nion))
+  write(*,*)"rank,U-max",myrank,maxval(abs(Uion))
+  write(*,*)"rank,V-max",myrank,maxval(abs(Vion))
 
 !  stop
   return

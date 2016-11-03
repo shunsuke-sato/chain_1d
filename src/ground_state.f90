@@ -22,7 +22,7 @@ subroutine ground_state
   allocate(work_lp(lwork),rwork(3*Nx-2),w(Nx))
 !LAPACK ==
 
-  write(*,"(A)")"!Start Electronic ground state calculation"
+  if(myrank == 0)write(*,"(A)")"!Start Electronic ground state calculation"
   Acx = 0d0
   allocate(za(Nx,Nx),zv(Nx,Nx))
 
@@ -51,37 +51,38 @@ subroutine ground_state
     
   end do
 
-  open(10,file=trim(filename)//'_gswf.out')
-  do ix=1,Nx
-    write(10,'(100e26.16E3)')Lx(ix),abs(zpsi_GS(ix,1,1))**2,abs(zpsi_GS(ix,1,Nk/2))**2 &
-      ,abs(zpsi_GS(ix,2,1))**2,abs(zpsi_GS(ix,2,Nk/2))**2
-  end do
-  close(10)
+  if(myrank == 0)then
+    open(10,file=trim(filename)//'_gswf.out')
+    do ix=1,Nx
+      write(10,'(100e26.16E3)')Lx(ix),abs(zpsi_GS(ix,1,1))**2,abs(zpsi_GS(ix,1,Nk/2))**2 &
+        ,abs(zpsi_GS(ix,2,1))**2,abs(zpsi_GS(ix,2,Nk/2))**2
+    end do
+    close(10)
   
   
-  open(10,file=trim(filename)//'_band_map.out')
-  do ik=1,NK
-    write(10,'(100e26.16E3)')kx(ik),(spe(ib,ik),ib=1,NB)
-  end do
+    open(10,file=trim(filename)//'_band_map.out')
+    do ik=1,NK
+      write(10,'(100e26.16E3)')kx(ik),(spe(ib,ik),ib=1,NB)
+    end do
     write(10,'(100e26.16E3)')-kx(1),(spe(ib,1),ib=1,NB)
-  close(10)
-  
-  open(10,file=trim(filename)//'_pot.out')
-  do ix=1,Nx
-    write(10,'(100e26.16E3)')Lx(ix),Veff(ix)
-  end do
-  close(10)
-  
-  write(*,*)'Band gap       =',spe(2,NK)-spe(1,NK),(spe(2,NK)-spe(1,NK))*Ry*2d0
-  
-  write(*,"(A,2x,e26.16e3)")'Total energy =',2d0*sum(spe(1,:))/dble(NK)+E_ii
-  write(*,"(A,2x,e26.16e3)")'Electronic energy =',2d0*sum(spe(1,:))/dble(NK)
-  write(*,"(A,2x,e26.16e3)")'Ion-Ionc energy =',E_ii
-  write(*,"(A,2x,e26.16e3)")'Band-gap (eV)=',2d0*Ry*(spe(2,1) - spe(1,1))
+    close(10)
+    
+    open(10,file=trim(filename)//'_pot.out')
+    do ix=1,Nx
+      write(10,'(100e26.16E3)')Lx(ix),Veff(ix)
+    end do
+    close(10)
+    
+    write(*,*)'Band gap       =',spe(2,NK)-spe(1,NK),(spe(2,NK)-spe(1,NK))*Ry*2d0
+    
+    write(*,"(A,2x,e26.16e3)")'Total energy =',2d0*sum(spe(1,:))/dble(NK)+E_ii
+    write(*,"(A,2x,e26.16e3)")'Electronic energy =',2d0*sum(spe(1,:))/dble(NK)
+    write(*,"(A,2x,e26.16e3)")'Ion-Ionc energy =',E_ii
+    write(*,"(A,2x,e26.16e3)")'Band-gap (eV)=',2d0*Ry*(spe(2,1) - spe(1,1))
+    
+    write(*,"(A)")"!End Electronic ground state calculation"  
+  end if
 
-  write(*,"(A)")"!End Electronic ground state calculation"  
-!  zpsi(:,1:NBocc,:)=zpsi_GS(:,1:NBocc,:)
-!  stop  
   return
 end subroutine ground_state
 !-------10--------20--------30--------40--------50--------60--------70--------80--------90

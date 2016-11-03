@@ -29,7 +29,7 @@ subroutine phonon_band_tst
   allocate(work_lp(lwork),rwork(3*NK*NB-2),w(NK*NB))
 !LAPACK ==
 
-  write(*,"(A)")"!Start Phonon band calculation"
+  if(myrank == 0)write(*,"(A)")"!Start Phonon band calculation"
   Nmat = NK*NB
   allocate(zCt(NK*NB), zDw(Nion,Nion,NK))
   la_full = lattice_a*dble(NK)
@@ -47,7 +47,7 @@ subroutine phonon_band_tst
 
   E_gs = E_tot
 
-  open(21,file="ef_tst.out")
+  if(myrank == 0) open(21,file="ef_tst.out")
   do is1 = 0,Num
     Uion(1,1) = dble(is1)*Udist/dble(Num)
 
@@ -57,15 +57,17 @@ subroutine phonon_band_tst
     call prep_Hmat
     call total_energy
     call force_ion
-
-    write(21,"(999e26.16e3)")Uion(1,1),E_tot-E_gs,Fion(1,1),E_tot,E_elec,E_ii
+      
+    if(myrank==0)write(21,"(999e26.16e3)")Uion(1,1),E_tot-E_gs,Fion(1,1),E_tot,E_elec,E_ii
   end do
-  close(21)
+  if(myrank==0)close(21)
 
-  write(*,*)"f-sum",sum(Fion(:,:)),sum(Fion(:,1)),sum(Fion(:,2))
-  do is1 = 1,NK
-    write(*,"(I6,2x,999e16.6e3)")is1,Fion(is1,1),Fion(is1,2)
-  end do
+  if(myrank==0)then
+    write(*,*)"f-sum",sum(Fion(:,:)),sum(Fion(:,1)),sum(Fion(:,2))
+    do is1 = 1,NK
+      write(*,"(I6,2x,999e16.6e3)")is1,Fion(is1,1),Fion(is1,2)
+    end do
+  end if
 
 
 ! phonon calculation
@@ -115,13 +117,14 @@ subroutine phonon_band_tst
   end do
   w_ph = sqrt(w2_ph)
 
-  open(10,file=trim(filename)//'_phonon_band_tst.out')
-  do ik1=1,NK
-    write(10,'(100e26.16E3)')kx(ik1),w_ph(:,ik1),w2_ph(:,ik1)
-  end do
+  if(myrank == 0)then
+    open(10,file=trim(filename)//'_phonon_band_tst.out')
+    do ik1=1,NK
+      write(10,'(100e26.16E3)')kx(ik1),w_ph(:,ik1),w2_ph(:,ik1)
+    end do
     write(10,'(100e26.16E3)')-kx(1),w_ph(:,1),w2_ph(:,1)
-  close(10)
-
+    close(10)
+  end if
 
 
   return
