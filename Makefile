@@ -1,7 +1,8 @@
-FC = mpif90 -O2 ## gfotran
+#FC = mpif90 -O2 ## gfotran
+FC = mpiifort -O3 -ipo -ip -xHOST ## intel fortran
 
-LN = -llapack -lblas #other
-
+#LN = -llapack -lblas #other
+LN = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_sequential.a -Wl,--end-group -lpthread -lm
 
 
 VPATH = src:object

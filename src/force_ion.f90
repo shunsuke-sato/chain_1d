@@ -4,6 +4,12 @@ subroutine force_ion
   complex(8) :: zCt(NK*NB),zAt(NK*NB,NK*NB)
   integer :: icell, icell2, aion, bion,ik
   real(8) :: la_full,x
+!LAPACK ==
+  complex(8),parameter :: zONE = (1d0,0d0),zZero = 0d0
+  integer :: Nmax
+  integer :: info
+  Nmax = NB*NK
+!LAPACK ==
 
   la_full = lattice_a*dble(NK)
   
@@ -15,11 +21,13 @@ subroutine force_ion
 ! electron-ion interaction ==
       zAt = zF_mat_full(:,:,icell,aion) +2d0*zG_mat_full(:,:,icell,aion)*Uion(icell,aion)
 
-      do ik = 1,NK
+      call zhemm('L','U',Nmax,NK,zONE,zAt,Nmax,zpsi_Ct,Nmax,zZero,zhpsi_Ct_t,Nmax)
+      Fion(icell,aion) = Fion(icell,aion) + 2d0*sum(conjg(zpsi_Ct(:,:))*zhpsi_Ct_t(:,:))
+!      do ik = 1,NK
 !        zCt = matmul(zF_mat_full(:,:,icell,aion),zpsi_Ct(:,ik))
-        zCt = matmul(zAt(:,:),zpsi_Ct(:,ik))
-        Fion(icell,aion) = Fion(icell,aion) + 2d0*sum(conjg(zpsi_Ct(:,ik))*zCt(:))
-      end do
+!        zCt = matmul(zAt(:,:),zpsi_Ct(:,ik))
+!        Fion(icell,aion) = Fion(icell,aion) + 2d0*sum(conjg(zpsi_Ct(:,ik))*zCt(:))
+!      end do
 
 ! ion-ion interaction ==
       do icell2 = 1,NK
