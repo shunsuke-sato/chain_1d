@@ -92,7 +92,7 @@ subroutine dt_evolve
 
 
         do ik = 1,NK
-          beta(iLan+1,ik) = sqrt(sum(abs(zpsi_Ct(:,ik))**2))
+          beta(iLan+1,ik) = sqrt(sum(abs( zpsi_Ct_t_Lan(:,ik,iLan+1) )**2))
           zpsi_Ct_t_Lan(:,ik,iLan+1) = zpsi_Ct_t_Lan(:,ik,iLan+1)/beta(iLan+1,ik)
         end do
       end do
